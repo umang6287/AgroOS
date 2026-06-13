@@ -6,7 +6,8 @@ Recommended settings:
 
 - Start command: `uvicorn main:app --host 0.0.0.0 --port $PORT`
 - Environment variables:
-  - `OPENAI_API_KEY`
-  - `DATABASE_URL`
   - `DEMO_MODE`
-  - communication provider keys as needed
+  - `FRONTEND_URL`
+  - `CORS_ORIGINS`
+
+For the first smoke test, do not configure API keys. The only required endpoint is `GET /health`.

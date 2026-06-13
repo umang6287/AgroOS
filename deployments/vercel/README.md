@@ -8,5 +8,6 @@ Recommended settings:
 - Build command: `npm run build`
 - Output directory: `.next`
 - Environment variables:
-  - `NEXT_PUBLIC_API_URL`
-  - `NEXT_PUBLIC_WS_URL`
+  - `NEXT_PUBLIC_API_BASE_URL`
+
+For the first smoke test, point `NEXT_PUBLIC_API_BASE_URL` to the Railway backend URL and verify that the page reports backend status `ok`.
