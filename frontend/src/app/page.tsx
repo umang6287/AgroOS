@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from "react";
 
+import { API_URL } from "@/lib/api";
+
 type HealthState =
   | { status: "loading"; message: string }
   | { status: "ok"; message: string }
@@ -13,7 +15,7 @@ export default function Home() {
     message: "Checking backend health..."
   });
 
-  const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:8000";
+  const apiBaseUrl = API_URL;
 
   useEffect(() => {
     fetch(`${apiBaseUrl}/health`)
