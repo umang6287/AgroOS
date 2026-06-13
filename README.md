@@ -63,7 +63,7 @@ Install command: npm install
 
 ### Railway Backend
 
-Deploy `backend/` as the Railway service root.
+Preferred setup: deploy `backend/` as the Railway service root.
 
 Start command:
 
@@ -80,6 +80,8 @@ DEMO_MODE=true
 ```
 
 The backend also includes `backend/railway.json` with the same start command.
+
+Fallback setup: if Railway is connected to the repository root instead of `backend/`, the root `railway.json`, `nixpacks.toml`, and `Procfile` tell Railway to install `backend/requirements.txt` and start the API from `backend/`.
 
 ## Scope
 
