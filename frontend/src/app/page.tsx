@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 
+import { FarmCommandCenter } from "@/components/command-center/FarmCommandCenter";
 import { API_URL } from "@/lib/api";
 
 type HealthState =
@@ -35,23 +36,5 @@ export default function Home() {
       });
   }, [apiBaseUrl]);
 
-  return (
-    <main className="shell">
-      <section className="panel">
-        <p className="eyebrow">AgriOS Deployment Smoke Test</p>
-        <h1>Frontend is running.</h1>
-        <p className="lede">
-          This page intentionally checks only the FastAPI health endpoint. Farm features will be implemented after deployment is proven.
-        </p>
-
-        <div className={`status ${health.status}`}>
-          <span>Backend health</span>
-          <strong>{health.status}</strong>
-        </div>
-
-        <pre>{health.message}</pre>
-        <p className="hint">API base URL: {apiBaseUrl}</p>
-      </section>
-    </main>
-  );
+  return <FarmCommandCenter apiBaseUrl={apiBaseUrl} backendHealth={health} />;
 }
