@@ -1,0 +1,132 @@
+Generate a professional CODING_GUIDELINES.md file for the project:
+
+Project Name:
+AgriOS – Autonomous Farm Operating System
+
+Context:
+This is an AI-native system built during a hackathon using Codex. The system includes:
+
+* Multi-agent orchestration (Sensor, Vision, Risk, Planner, Robot, Voice)
+* Real-time synthetic farm simulation
+* Vision-based crop disease detection
+* Voice-enabled farm assistant (Marathi supported)
+* Evaluation and observability dashboard
+* WebSocket-based real-time updates
+
+Goal of this document:
+Ensure all code generated for this project is:
+
+* Consistent
+* Modular
+* Production-oriented
+* Agent-friendly (structured outputs)
+* Easy to extend during hackathon using Codex
+
+Include the following sections:
+
+1. Coding Principles
+
+* Simplicity over complexity
+* Modular design
+* Agent-first architecture thinking
+* Stateless services where possible
+* Real-time ready design
+
+2. Frontend Guidelines
+
+* Use Next.js (App Router preferred)
+* Use TypeScript
+* Use Tailwind CSS for styling
+* Component-driven architecture
+* Keep UI enterprise-grade (control center style)
+* Separate UI into:
+
+  * Map panel
+  * Agent timeline panel
+  * Metrics panel
+  * Voice interaction panel
+
+3. Backend Guidelines
+
+* Use FastAPI with Python
+* REST APIs for standard operations
+* WebSockets for real-time streams
+* Separate services for:
+
+  * sensor simulation
+  * agent orchestration
+  * vision processing
+  * evaluation tracking
+* Keep endpoints clean and minimal
+
+4. Agent Design Guidelines
+
+* Each agent must:
+
+  * Accept JSON input
+  * Return structured JSON output
+  * Include:
+
+    * reasoning
+    * confidence score
+    * action recommendation
+* Use Supervisor Agent for orchestration
+* No agent should directly modify UI state
+
+5. Data & Communication Standards
+
+* All inter-agent communication must be JSON-based
+* Use strict schemas for:
+
+  * Sensor data
+  * Vision outputs
+  * Planner decisions
+* WebSocket messages must include:
+
+  * event_type
+  * timestamp
+  * payload
+
+6. Real-Time System Guidelines
+
+* Prefer streaming updates over polling
+* Sensor simulator must emit updates every 2–5 seconds
+* UI must reactively update state
+
+7. AI Integration Guidelines
+
+* Use OpenAI API for:
+
+  * Vision analysis
+  * Planning decisions
+  * Voice assistant
+* Wrap all OpenAI calls in service layer
+* Never call OpenAI directly from UI
+
+8. Evaluation Guidelines
+
+* Every agent output must be logged
+* Track:
+
+  * latency
+  * confidence
+  * cost estimation
+* Build evaluation-first mindset
+
+9. Hackathon Optimization Rules
+
+* Prioritize working demo over completeness
+* Use fallback/mock data if APIs fail
+* Keep architecture simple and debuggable
+* Avoid overengineering (no unnecessary microservices)
+
+10. Code Quality Rules
+
+* Write readable code over clever code
+* Avoid deep nesting
+* Use clear naming conventions
+* Prefer functional components in frontend
+* Keep backend services stateless where possible
+
+End with:
+A short note explaining that this file is meant to guide Codex and human collaborators to maintain consistency during rapid hackathon development.

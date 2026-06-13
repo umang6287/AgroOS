@@ -1,0 +1,103 @@
+Generate a professional PRODUCT_REQUIREMENTS.md document for the following project.
+
+Project Name:
+AgriOS – Autonomous Farm Operating System
+
+Purpose:
+An AI-native farm manager that autonomously monitors farm conditions, analyzes crop health, plans irrigation activities, coordinates robotic inspections and communicates with farmers using voice.
+
+Target Users:
+
+* Mango farmers
+* Farm supervisors
+* Agricultural consultants
+
+Hackathon Theme Alignment:
+
+* Agentic Applications
+* Domain Agents
+* Multimodal Intelligence
+* Agent Evaluation
+* AI-native UX
+
+Core Features:
+
+1. Farm Digital Twin
+
+* Interactive farm map
+* Zones
+* Sensors
+* Robot locations
+* Health visualization
+
+2. Synthetic Real-Time Data
+
+* Soil moisture
+* Temperature
+* Humidity
+* Water tank levels
+* Robot telemetry
+
+3. Multi-Agent System
+
+* Supervisor Agent
+* Sensor Agent
+* Vision Agent
+* Risk Agent
+* Planner Agent
+* Robot Agent
+* Voice Agent
+
+4. Vision Analysis
+
+* Upload leaf images
+* Disease detection
+* Severity estimation
+* Recommendations
+
+5. Voice Farm Manager
+
+* Marathi voice input
+* Marathi voice output
+* Conversational farm assistant
+* "Call My Farm" experience
+
+6. Agent Evaluation Dashboard
+
+* Confidence
+* Accuracy
+* Latency
+* Cost
+* Human review flags
+
+7. Autonomous Actions
+
+* Irrigation scheduling
+* Robot dispatch
+* Alert generation
+
+Non-functional Requirements:
+
+* Real-time updates
+* Production-style UI
+* Cloud deployment
+* Mobile friendly
+
+Deliverables:
+
+* Working deployed application
+* Live demo
+* Agent observability
+* Multimodal interaction
+* Evaluation metrics
+
+Generate a detailed PRD with:
+
+* Vision
+* Problem Statement
+* Personas
+* User Stories
+* Functional Requirements
+* Non-functional Requirements
+* Success Metrics
+* Future Roadmap

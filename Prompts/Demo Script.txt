@@ -1,0 +1,46 @@
+Generate a DEMO_SCRIPT.md for a 5-minute hackathon presentation.
+
+Project:
+AgriOS – Autonomous Farm Operating System
+
+Presentation Goal:
+Demonstrate an AI-native autonomous farm managed through multiple collaborating agents.
+
+Demo Flow:
+
+Scene 1:
+Show farm digital twin.
+
+Scene 2:
+Show sensor anomaly detection.
+
+Scene 3:
+Show agent orchestration.
+
+Scene 4:
+Upload leaf image and perform disease analysis.
+
+Scene 5:
+Use Marathi voice conversation with the farm manager.
+
+Scene 6:
+Show evaluation dashboard.
+
+Scene 7:
+Show autonomous actions feed.
+
+For each scene provide:
+
+* What is displayed
+* What presenter should say
+* Expected outcome
+* Key judge takeaway
+
+Also include:
+
+* Opening pitch
+* Closing pitch
+* Likely judge questions
+* Suggested answers
+
+Keep the total demo duration under 5 minutes.

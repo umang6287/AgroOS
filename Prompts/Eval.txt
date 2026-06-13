@@ -1,0 +1,44 @@
+Implement the AgriOS Evaluation Agent and dashboard metrics.
+
+Purpose:
+Score agent behavior and workflow outcomes so the demo shows observability, not just automation.
+
+Track:
+- confidence
+- latencyMs
+- estimatedCostUsd
+- qualityScore
+- requiresHumanReview
+- actionSuccessRate
+- communicationDeliverySuccess
+- outcomeVerificationSuccess
+- warning count
+- fallback usage
+
+Evaluation Agent inputs:
+- agent step envelopes
+- workflow trace
+- action outcomes
+- communication events
+- human approval/rejection events
+
+Evaluation Agent output:
+Use the shared envelope with agent set to "evaluation".
+
+data fields:
+- workflowId
+- agentScorecards
+- reviewFlags
+- qualityScore
+- failureAnalysis
+- recommendations
+
+Rules:
+- Flag missing required envelope fields.
+- Flag confidence below 0.8.
+- Flag high-risk actions without human review.
+- Flag provider failures and fallback use.
+- Flag action recommendations without outcome verification.
+
+Dashboard:
+Expose scorecards, trace timeline, failure analysis, human review flags, and workflow success/failure summaries.

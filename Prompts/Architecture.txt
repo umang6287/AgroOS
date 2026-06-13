@@ -1,0 +1,85 @@
+Generate a professional ARCHITECTURE.md document for the following system.
+
+Project:
+AgriOS – Autonomous Farm Operating System
+
+Technology Stack:
+
+Frontend:
+
+* Next.js
+* Tailwind CSS
+* Leaflet
+* WebSocket Client
+
+Backend:
+
+* FastAPI
+* Python
+
+AI:
+
+* OpenAI API
+* Vision Analysis
+* Speech-to-Text
+* Text-to-Speech
+
+Data:
+
+* SQLite
+
+Deployment:
+
+* Vercel
+* Railway
+
+Architecture Requirements:
+
+1. Farm Simulator
+   Generates:
+
+* Soil moisture
+* Temperature
+* Humidity
+* Water tank levels
+* Robot telemetry
+
+2. Agent Layer
+
+Supervisor Agent orchestrates:
+
+* Sensor Agent
+* Vision Agent
+* Risk Agent
+* Planner Agent
+* Robot Agent
+* Voice Agent
+
+3. Evaluation Layer
+
+Track:
+
+* Confidence
+* Latency
+* Cost
+* Accuracy
+
+4. UI Components
+
+* Farm Map
+* Agent Timeline
+* Vision Analysis Screen
+* Voice Farm Manager
+* Evaluation Dashboard
+
+Include:
+
+* High-level architecture diagram
+* Component diagram
+* Data flow
+* Agent orchestration flow
+* Deployment architecture
+* WebSocket architecture
+* Future scalability considerations
+
+Output in clean markdown format.

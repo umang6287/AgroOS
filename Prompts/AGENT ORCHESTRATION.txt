@@ -1,0 +1,43 @@
+You are implementing the AgriOS supervisor-based multi-agent layer.
+
+Use AGENTS.md as the source of truth for agent contracts, workflow routing, autonomy rules, communication policy, evaluation metrics, and demo fallbacks.
+
+Core rule:
+Every agent returns the shared JSON-compatible envelope:
+
+{
+  "agent": "agent_id",
+  "status": "completed | failed | skipped | requires_review",
+  "summary": "short human-readable result",
+  "confidence": 0.0,
+  "latencyMs": 0,
+  "estimatedCostUsd": 0.0,
+  "requiresHumanReview": false,
+  "explanation": [],
+  "warnings": [],
+  "sourceIds": [],
+  "nextAgent": null,
+  "data": {}
+}
+
+Supervisor responsibilities:
+- Accept events from simulator, UI, voice, image upload, action scheduler, or outcome verifier.
+- Select the correct workflow.
+- Run only the required agents.
+- Preserve the agent run trace.
+- Validate every agent envelope before passing it forward.
+- Apply autonomy rules before action creation or outbound communication.
+- Use deterministic fallbacks for demo-critical flows.
+
+Supported workflows:
+- Sensor anomaly: Supervisor -> Sensor -> Weather -> Risk -> Planner -> Robot -> Communication -> Outcome -> Evaluation -> Memory
+- Vision: Supervisor -> Vision -> Risk -> Planner -> Robot -> Communication -> Evaluation -> Memory
+- Voice: Voice -> Memory -> Supervisor -> Voice
+- Outcome verification: Outcome -> Evaluation -> Memory
+
+Threading guidance:
+- Each agent can be implemented in its own parallel thread or package file.
+- Shared types, schemas, and validators belong in packages/shared.
+- Agents must not call provider SDKs directly unless they own that service wrapper.
+- Communication must go through the Communication Gateway.
+- Frontend must never receive API keys or provider credentials.

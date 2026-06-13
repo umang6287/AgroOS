@@ -1,0 +1,33 @@
+Build AgriOS, an Autonomous Farm Operating System.
+
+Purpose:
+AgriOS is an AI-native farm manager that monitors farm conditions, analyzes crop health, plans irrigation, coordinates robot inspections, communicates with farmers, verifies outcomes, remembers farm history, and evaluates agent behavior.
+
+Technology baseline:
+- Frontend: Next.js, Tailwind CSS, WebSocket client
+- Backend: FastAPI, Python, WebSocket server
+- AI: OpenAI API through backend service wrappers
+- Data: SQLite for demo persistence
+- Communication: gateway wrappers for in_app, phone_call, sms, whatsapp, telegram
+
+Implementation shape:
+- apps/api: FastAPI app, WebSocket routes, agent orchestration endpoints
+- apps/web: dashboard, farm map, timeline, vision screen, voice UI, evaluation dashboard
+- packages/agents: supervisor, sensor, weather, vision, risk, planner, robot, communication, outcome, voice, memory, evaluation
+- packages/shared: schemas, envelope validator, constants, autonomy rules
+- packages/simulator: deterministic synthetic telemetry and follow-up outcome events
+- packages/communication: provider gateways and simulated delivery fallback
+- packages/storage: SQLite models, repositories, journal, run trace storage
+- tests: agent unit tests and workflow tests
+
+Agent contract:
+All agents must return the shared envelope defined in AGENTS.md. Include confidence, latencyMs, estimatedCostUsd, requiresHumanReview, explanation evidence, and structured data.
+
+Demo priorities:
+- Deterministic sensor anomaly flow.
+- Deterministic weather fallback.
+- Leaf image analysis with known demo fallback.
+- Voice farm manager with Marathi text fallback.
+- Simulated communication delivery when providers are unavailable.
+- Accelerated outcome verification.
+- Visible fallback label when an AI/provider response is static.

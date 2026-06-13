@@ -1,0 +1,32 @@
+Implement the AgriOS deterministic farm simulator.
+
+Purpose:
+Generate realistic demo-safe telemetry for the farm digital twin and agent workflows.
+
+Telemetry fields:
+- timestamp
+- farmId
+- zoneId
+- cropType
+- soilMoisturePct
+- temperatureC
+- humidityPct
+- waterTankPct
+- robotId
+- robotBatteryPct
+- robotStatus
+- robotLocation
+- anomalyHint
+
+Behavior:
+- Emit WebSocket updates every 3 seconds.
+- Use deterministic seeded values so hackathon demos are repeatable.
+- Create normal daily trends for moisture, temperature, and humidity.
+- Trigger at least one reliable low-moisture anomaly in a known zone.
+- Emit accelerated follow-up telemetry after an action so Outcome Agent can verify before/after values.
+
+Output format:
+Return simulator events as JSON-compatible objects. Simulator events enter the Sensor Anomaly Workflow through the Supervisor Agent.
+
+Demo fallback:
+If live data or WebSocket clients fail, expose the latest deterministic snapshot through an API route.
