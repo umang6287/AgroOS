@@ -167,6 +167,19 @@ outcome checks, evaluations, and memory entries.
    - The Memory Agent writes farm journal entries so future planning can use
      what worked before.
 
+## Demo Results
+
+These submitted conversation videos show AgriOS Saathi giving farm status,
+explaining risk, and asking for farmer approval in multiple languages. They are
+included as proof that the same agent workflow can serve farmers in English and
+local Indian languages while preserving the approval gate for risky actions.
+
+| Result | What it proves | Video |
+| --- | --- | --- |
+| English farm-status and approval conversation | AgriOS can brief the farmer on current farm status, active risk, planned action, and approval need in English. | [Watch English demo](submission/Videos/English.mp4) |
+| Gujarati farm-status and approval conversation | AgriOS can respond in Gujarati while keeping the same operational context: status, risk, action, and approval. | [Watch Gujarati demo](submission/Videos/Gujarati.mp4) |
+| Marathi farm-status and approval conversation | AgriOS can support a Marathi farmer conversation, including status briefing and approval-oriented decision flow. | [Watch Marathi demo](submission/Videos/Marathi.mp4) |
+
 ## Screenshots
 
 | View | Screenshot |
@@ -217,6 +230,11 @@ scorecard can include:
 - **Grounding:** whether the answer stayed tied to farm state and agent context.
 - **Conversation answer score:** whether the chat or voice response answered the
   farmer's question.
+
+Multilingual conversation evidence is available in the submitted result videos:
+[English](submission/Videos/English.mp4),
+[Gujarati](submission/Videos/Gujarati.mp4), and
+[Marathi](submission/Videos/Marathi.mp4).
 
 ![Agent performance and evaluation](docs/screenshots/09-agent-evaluation.png)
 
