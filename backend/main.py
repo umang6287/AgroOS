@@ -50,6 +50,14 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+
+@app.middleware("http")
+async def add_no_store_for_mutable_routes(request, call_next):
+    response = await call_next(request)
+    if request.url.path.startswith(("/auth", "/voice")):
+        response.headers["Cache-Control"] = "no-store"
+    return response
+
 app.include_router(routes_health.router)
 app.include_router(routes_auth.router)
 app.include_router(routes_ai_config.router)
