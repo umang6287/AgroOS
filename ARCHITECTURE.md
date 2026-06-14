@@ -95,6 +95,7 @@ flowchart TB
     AdminFeed["Admin Alert Service"]
     Policy["Autonomy and Review Rules"]
     Gateway["Communication Gateway"]
+    Providers["WhatsApp / Telegram / SMS / Phone Adapters"]
   end
 
   subgraph Agents["Domain Agents"]
@@ -145,7 +146,11 @@ flowchart TB
   Orchestrator --> DemoStore
   Policy --> Orchestrator
   Orchestrator --> Services
+  Planner --> CommsAgent
+  Risk --> CommsAgent
+  Voice --> CommsAgent
   CommsAgent --> Gateway
+  Gateway --> Providers
 ```
 
 ## 5. Runtime Workflows
@@ -161,8 +166,11 @@ sequenceDiagram
   participant Risk as Risk Agent
   participant Planner as Planner Agent
   participant Robot as Robot Agent
+  participant Comms as Communication Agent
+  participant Gateway as Communication Gateway
   participant Outcome as Outcome Agent
   participant Eval as Evaluation Agent
+  participant Memory as Memory Agent
   participant UI as Dashboard
 
   Sim->>Sup: telemetry.updated
@@ -176,10 +184,15 @@ sequenceDiagram
   Planner-->>Sup: irrigation and inspection plan
   Sup->>Robot: assign inspection task
   Robot-->>Sup: robot assignment
+  Sup->>Comms: notify farmer if warning, critical, or approval needed
+  Comms->>Gateway: dispatch through selected channel
+  Gateway-->>Comms: simulated or provider delivery status
+  Comms-->>Sup: communication event
   Sup->>Outcome: schedule follow-up verification
   Outcome-->>Sup: pending outcome check
   Sup->>Eval: evaluate workflow
   Eval-->>Sup: metrics and review flags
+  Sup->>Memory: write action, communication, and outcome plan
   Sup-->>UI: agent trace, action, explanation, evaluation
 ```
 

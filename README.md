@@ -167,16 +167,22 @@ flowchart LR
   Supervisor --> Sensor[Sensor Agent]
   Supervisor --> WeatherAgent[Weather Agent]
   Supervisor --> Vision[Vision Agent]
+  Supervisor --> Memory[Memory Agent]
   Supervisor --> Risk[Risk Agent]
+  Sensor --> Risk
+  WeatherAgent --> Risk
+  Vision --> Risk
+  Memory --> Risk
   Risk --> Planner[Planner Agent]
   Planner --> Robot[Robot Agent]
   Planner --> Communication[Communication Agent]
   Planner --> Outcome[Outcome Agent]
+  Communication --> Gateway[Communication Gateway]
   Outcome --> Evaluation[Evaluation Agent]
   Evaluation --> Memory[Memory Agent]
+  Communication --> Evaluation
 
-  OpenAI[OpenAI Services: Chat, Vision, Speech, Realtime] --> API
-  API --> Gateway[Communication Gateway]
+  API --> OpenAI[OpenAI Services: Chat, Vision, Speech, Realtime]
   Gateway --> WhatsApp[WhatsApp]
   Gateway --> Telegram[Telegram]
   Gateway --> SMS[SMS]
