@@ -15,5 +15,7 @@ dist/
 build/
 *.log
 *.db
+*.tsbuildinfo
+.pytest_cache/
+.pytest_tmp/
 .DS_Store
-

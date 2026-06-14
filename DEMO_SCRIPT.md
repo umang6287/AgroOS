@@ -63,7 +63,7 @@ Expected result:
 Show:
 
 - Zone B moisture drops to a critical value.
-- Example: `Moisture = 12%`
+- Example: `Moisture = 21%`
 - The timeline begins a new workflow.
 
 Say:
@@ -160,7 +160,7 @@ Example result:
 ```text
 Disease: Fungal infection
 Severity: Medium
-Confidence: 87%
+Confidence: 86%
 Recommendation: Assign Robot R1 for inspection
 ```
 
@@ -218,9 +218,9 @@ Show:
 
 ```text
 Outcome: Successful
-Zone B moisture: 12% -> 28%
+Zone B moisture: 21% -> 34%
 Planner Accuracy: 96%
-Vision Confidence: 88%
+Vision Confidence: 86%
 Voice Response Quality: 92%
 Average Response Time: 1.1s
 Average Cost: $0.002
@@ -255,10 +255,10 @@ If microphone fails:
 - Use the text fallback in the voice panel.
 - Say: "For demo reliability, the same Voice Agent works through text when microphone permissions are unavailable."
 
-If OpenAI vision call fails:
+If live AI is not configured:
 
-- Use deterministic fallback output for the demo image.
-- Say: "The architecture supports live AI calls, and this fallback keeps the demo path reliable."
+- Use deterministic fallback output for farmer copy, voice, and the demo image.
+- Say: "The architecture supports live AI calls for copy and speech, and deterministic fallbacks keep the demo path reliable."
 
 If weather or outcome timing is slow:
 

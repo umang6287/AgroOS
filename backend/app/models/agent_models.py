@@ -1,4 +1,6 @@
-from pydantic import BaseModel
+from typing import Any
+
+from pydantic import BaseModel, Field
 
 
 class AgentEnvelope(BaseModel):
@@ -9,4 +11,17 @@ class AgentEnvelope(BaseModel):
     latencyMs: int = 0
     estimatedCostUsd: float = 0.0
     requiresHumanReview: bool = False
-    data: dict = {}
+    explanation: list[str] = Field(default_factory=list)
+    warnings: list[str] = Field(default_factory=list)
+    sourceIds: list[str] = Field(default_factory=list)
+    nextAgent: str | None = None
+    data: dict[str, Any] = Field(default_factory=dict)
+
+
+class AgentTrace(BaseModel):
+    runId: str
+    workflow: str
+    status: str
+    startedAt: str
+    completedAt: str | None = None
+    trace: list[AgentEnvelope] = Field(default_factory=list)

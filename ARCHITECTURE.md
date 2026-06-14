@@ -12,12 +12,16 @@ The architecture favors demo reliability and clean separation of concerns. Synth
 flowchart LR
   Farmer["Farmer / Supervisor / Judge"] --> UI["Next.js Farm Command Center"]
   UI <--> API["FastAPI Backend"]
-  API --> Simulator["Farm Simulator"]
+  UI <--> WS["/ws/farm Live Stream"]
+  API --> SimEngine["Synchronized Farm Simulation Engine"]
+  SimEngine --> SimStore["SQLite simulation_events"]
+  API --> DemoStore["In-memory Demo Store"]
   API --> Agents["Agent Orchestration Layer"]
-  API --> Weather["Mock Weather Source"]
-  Agents --> OpenAI["OpenAI Services"]
-  Agents --> Comms["Communication Providers"]
-  API --> Store["SQLite Demo Store"]
+  API --> AIConfig["AI Config and BYOK Endpoints"]
+  Agents --> OpenAI["OpenAI Service Wrapper"]
+  Agents --> Comms["Communication Gateway"]
+  Agents --> Weather["Deterministic Weather Generator"]
+  WS --> SimEngine
   API --> UI
 ```
 
@@ -25,11 +29,11 @@ flowchart LR
 
 Frontend:
 
-- Next.js
-- React
+- Next.js 15
+- React 19
 - TypeScript
 - Tailwind CSS
-- Leaflet or a custom farm digital twin
+- Custom farm digital twin
 - WebSocket client
 
 Backend:
@@ -38,17 +42,21 @@ Backend:
 - Python
 - Pydantic models
 - WebSocket server
-- SQLite for demo persistence
+- SQLite for persisted simulation tick history
+- In-memory demo store for latest agent trace, scorecards, actions, communications, outcomes, and journal entries
 - Mock weather provider for deterministic demo forecasts
-- Autonomy policy evaluator
+- Deterministic autonomy and review gates in the planner/risk agents
 - Communication gateway with provider adapters
+- AI configuration service for backend-only OpenAI key storage and validation
+- Admin alert feed generator for rolling one-hour notification, approval, action, and outcome events
 
 AI services:
 
-- OpenAI text model for planning and summaries
-- OpenAI vision-capable model for leaf analysis
-- Speech-to-text for voice input
-- Text-to-speech for voice output
+- OpenAI text model for farmer-facing copy when configured
+- Deterministic fallback copy when OpenAI is disabled or unavailable
+- Deterministic demo-image fallback for leaf analysis
+- OpenAI speech-to-text for optional voice input
+- OpenAI text-to-speech for optional voice output
 
 Deployment:
 
@@ -71,17 +79,22 @@ flowchart TB
     JournalUI["Farm Journal"]
     AutonomyUI["Autonomy Controls"]
     CommsUI["Communication Center"]
+    AdminUI["Farm Admin Alert Drawer"]
+    AIKeyUI["OpenAI Configuration Panel"]
   end
 
   subgraph Backend["Backend"]
     REST["REST API"]
     WS["WebSocket Hub"]
-    Sim["Farm Simulator"]
+    Sim["Simulation Engine"]
+    SimStorage["SQLite Simulation Storage"]
+    DemoStore["Demo Store"]
     Orchestrator["Supervisor Agent"]
     Services["AI Service Wrappers"]
-    Policy["Autonomy Policy Engine"]
+    Config["AI Config Service"]
+    AdminFeed["Admin Alert Service"]
+    Policy["Autonomy and Review Rules"]
     Gateway["Communication Gateway"]
-    Storage["SQLite Storage"]
   end
 
   subgraph Agents["Domain Agents"]
@@ -105,13 +118,19 @@ flowchart TB
   JournalUI <--> WS
   AutonomyUI --> REST
   CommsUI <--> WS
+  AdminUI <--> WS
+  AIKeyUI --> REST
   VisionUI --> REST
   VoiceUI --> REST
   REST --> Orchestrator
+  REST --> Config
   REST --> Policy
   REST --> Gateway
   WS --> Command
+  WS --> Sim
   Sim --> Orchestrator
+  Sim --> SimStorage
+  Sim --> AdminFeed
   Orchestrator --> Sensor
   Orchestrator --> Weather
   Orchestrator --> Vision
@@ -123,7 +142,7 @@ flowchart TB
   Orchestrator --> Voice
   Orchestrator --> Memory
   Orchestrator --> Eval
-  Orchestrator --> Storage
+  Orchestrator --> DemoStore
   Policy --> Orchestrator
   Orchestrator --> Services
   CommsAgent --> Gateway
@@ -364,9 +383,30 @@ All agents should return a shared envelope.
 
 ## 8. Real-Time Events
 
-Use WebSockets for live dashboard updates.
+The implemented live stream is `WS /ws/farm`. It sends recent stored simulation
+events on connect, then sends one synchronized `simulation.tick` event per
+simulation interval.
 
-Event names:
+Implemented WebSocket event:
+
+- `simulation.tick`
+
+Each tick contains:
+
+- `eventId`, `type`, `sequence`, and `createdAt`.
+- `data.farmState` with zones, robot route state, assets, active actions,
+  approvals, communication events, outcomes, journal entries, latest telemetry,
+  and simulation metadata.
+- `data.telemetry` with the current inspection context.
+- `data.sensorEnvelope` and `data.robotEnvelope` using the shared agent envelope.
+- `data.agentTrace` for the simulation tick.
+
+Workflow events such as `agent.trace.updated`, `action.created`,
+`communication.simulated`, `outcome.verified`, and `evaluation.updated` are
+created in the demo store after REST-triggered workflows. They are currently
+reflected through `/farm/state`, `/agents/trace`, and `/evaluation/scorecards`.
+
+Future live event names:
 
 - `telemetry.updated`
 - `agent.run.started`
@@ -388,7 +428,7 @@ Event names:
 
 Payload rules:
 
-- Include `timestamp`.
+- Include `createdAt` or `timestamp`.
 - Include `runId` for workflow-related events.
 - Include `actionId` for action, approval, and outcome events.
 - Include `communicationId` for communication events.
@@ -397,7 +437,23 @@ Payload rules:
 
 ## 9. Persistence Model
 
-Suggested SQLite tables:
+Implemented persistence:
+
+- SQLite table `simulation_events` stores the synchronized simulation tick stream.
+- `DATABASE_URL=sqlite:///./agrios.db` configures the default SQLite file.
+- `AGRIOS_SIMULATION_DB_PATH` can override the simulation database path.
+- `SIMULATION_RETENTION_MINUTES` controls event retention.
+
+Implemented in-memory demo state:
+
+- Latest agent trace.
+- Evaluation scorecards.
+- Active actions and pending approvals.
+- Communication events.
+- Outcome checks.
+- Farm journal entries.
+
+Planned persistent tables for production or a longer-lived demo:
 
 - `telemetry_events`
 - `agent_runs`
@@ -414,41 +470,37 @@ Suggested SQLite tables:
 - `communication_events`
 - `channel_preferences`
 
-Minimum required stored state:
-
-- Latest telemetry per zone.
-- Agent run and step history.
-- Autonomous actions.
-- Evaluation metrics.
-- Voice session transcript or summary.
-- Weather snapshots used in recommendations.
-- Before and after values for outcome checks.
-- Farm journal entries for memory-backed explanations.
-- Current autonomy mode and approval history.
-- Channel preferences for each demo recipient.
-- Communication audit trail and delivery status.
-
 ## 10. API Surface
 
-Suggested endpoints:
+Implemented endpoints:
 
 - `GET /health`
-- `GET /api/farm/state`
-- `GET /api/agents/runs`
-- `GET /api/actions`
-- `POST /api/actions/{action_id}/approve`
-- `POST /api/actions/{action_id}/reject`
-- `GET /api/weather/current`
-- `GET /api/journal`
-- `GET /api/autonomy`
-- `POST /api/autonomy`
-- `GET /api/communications`
-- `POST /api/communications/test`
-- `GET /api/channel-preferences`
-- `POST /api/channel-preferences`
-- `POST /api/vision/analyze`
-- `POST /api/voice/respond`
-- `WS /ws`
+- `GET /farm/state`
+- `GET /agents/trace`
+- `POST /vision/analyze`
+- `POST /voice/ask`
+- `GET /evaluation/scorecards`
+- `GET /simulation/status`
+- `GET /simulation/events`
+- `POST /simulation/reset`
+- `GET /ai/config/status`
+- `POST /ai/config/validate`
+- `POST /ai/config/openai-key`
+- `WS /ws/farm`
+
+Planned endpoints:
+
+- `GET /actions`
+- `POST /actions/{action_id}/approve`
+- `POST /actions/{action_id}/reject`
+- `GET /weather/current`
+- `GET /journal`
+- `GET /autonomy`
+- `POST /autonomy`
+- `GET /communications`
+- `POST /communications/test`
+- `GET /channel-preferences`
+- `POST /channel-preferences`
 
 API implementation rules:
 
@@ -479,12 +531,14 @@ flowchart LR
   Browser <--> Railway["Railway FastAPI Backend"]
   Vercel --> Railway
   Railway --> OpenAI["OpenAI API"]
-  Railway --> SQLite["SQLite Demo Database"]
+  Railway --> SQLite["SQLite simulation_events Database"]
 ```
 
 ## 13. Future Architecture
 
-- Replace SQLite with Postgres.
+- Move agent traces, actions, communications, outcomes, approvals, and journal
+  entries from the in-memory demo store to durable storage.
+- Replace or complement SQLite with Postgres for multi-user production data.
 - Add queue workers for long-running agent jobs.
 - Add real IoT ingestion through MQTT or HTTP.
 - Add role-based access control.

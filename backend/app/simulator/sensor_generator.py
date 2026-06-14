@@ -1,2 +1,5 @@
+from app.simulation.engine import get_current_sensor_reading
+
+
 def generate_sensor_reading():
-    return {"zoneId": "zone-b", "soilMoisturePct": 21}
+    return get_current_sensor_reading()

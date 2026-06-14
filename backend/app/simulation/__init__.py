@@ -1,0 +1,2 @@
+"""Synthetic farm simulation package."""
+

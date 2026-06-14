@@ -12,7 +12,7 @@ AgriOS is not a generic farm dashboard. It is an AI-native operations layer that
 
 Core promise:
 
-- Monitor farm conditions in real time.
+- Monitor farm conditions in real time from a synchronized farm simulation.
 - Detect operational risk from sensors and images.
 - Coordinate specialized AI agents.
 - Recommend or schedule actions.
@@ -22,6 +22,7 @@ Core promise:
 - Verify whether actions improved the farm state.
 - Adjust autonomy based on action risk and farmer approval settings.
 - Use weather and farm history as planning context.
+- Let the demo operator configure OpenAI from the backend safely without exposing keys to the browser.
 
 ## 3. Problem Statement
 
@@ -51,17 +52,22 @@ AgriOS connects telemetry, visual evidence, planning, and communication in one w
 
 - Farm command center with digital twin view.
 - Synthetic real-time sensor stream.
+- Synchronized robot patrol route, zone assets, valves, pump, water tank, and sensor mesh.
 - Multi-agent execution timeline.
 - Leaf image upload and disease-style analysis.
 - "Call My Farm" voice or text experience with Marathi demo support.
+- Multilingual command center copy for English, Marathi, Hindi, and Gujarati.
 - Agent evaluation dashboard.
 - Autonomous actions feed.
+- Rolling farm admin alert feed for notifications, approvals, actions, outcomes, and performance.
 - Weather-aware planning with mocked or API-backed forecast data.
 - Outcome verification after planned actions.
 - Autonomy mode controls and human approval for high-risk actions.
 - Communication channels for in-app call, phone call, SMS/mobile message, WhatsApp, and Telegram.
 - Farm memory and journal entries for past actions.
 - Explainability panel for each recommendation.
+- Backend-only OpenAI key status, validation, and storage flow for optional live AI copy, transcription, and speech.
+- Simulation status, event history, and reset APIs.
 - Demo-ready fallback data and responses.
 
 ### Out of Scope for Hackathon MVP
@@ -184,7 +190,9 @@ Approval needed: WhatsApp or Telegram with approve/reject action
 ### 8.1 Farm Digital Twin
 
 - Display farm zones, sensor positions, robot position, and zone health.
-- Show live values for moisture, temperature, humidity, tank level, and robot battery.
+- Show live values for moisture, temperature, humidity, tank level, pump pressure, valve status, and robot battery.
+- Show robot route progress, current waypoint, current inspection target, and recent observations.
+- Represent orchard assets: trees, sensors, valves, water tank, pump, and charging base.
 - Highlight critical or warning states visually.
 - Allow the user to understand the farm state within 30 seconds.
 
@@ -194,6 +202,8 @@ Approval needed: WhatsApp or Telegram with approve/reject action
 - Include normal trends and deterministic demo anomalies.
 - Trigger at least one low-moisture workflow during the demo.
 - Broadcast updates to the frontend through WebSockets or an equivalent real-time channel.
+- Persist recent simulation ticks in SQLite so the dashboard can replay recent state after reconnect.
+- Provide simulation status, recent events, and reset endpoints for demos and tests.
 
 ### 8.3 Agent Orchestration
 
@@ -230,7 +240,7 @@ Example output:
 - Provide a prominent "Call My Farm" entry point.
 - Support browser microphone when available.
 - Provide text input fallback.
-- Support Marathi demo prompt and response.
+- Support Marathi demo prompt and response, with Hindi and Gujarati UI copy available for the command center.
 - Answer from current farm state, not generic farming advice.
 - Summarize actions already taken and actions awaiting approval.
 - Hand off urgent summaries to the Communication Agent when the farmer should be notified outside the app.
@@ -287,6 +297,21 @@ Example output:
 - Keep a communication audit trail tied to the originating agent run.
 - Provide mock delivery mode so the demo does not depend on external provider availability.
 
+### 8.13 Farm Admin Alert Feed
+
+- Maintain a rolling one-hour feed with one alert every five minutes.
+- Rotate across soil moisture, robot inspection, WhatsApp notification, sensor drift, irrigation action, approval, tank level, pump pressure, pest pressure, heat stress, outcome verification, and escalation events.
+- Let the UI filter alerts by all items, approvals, actions, and sent communications.
+- Keep alert timestamps aligned to simulation time for repeatable demo behavior.
+
+### 8.14 AI Configuration
+
+- Show whether OpenAI is configured and live-enabled.
+- Allow the operator to paste and validate an OpenAI API key from the command center.
+- Store the key only in the backend environment file.
+- Never return the raw API key to the frontend.
+- Support live OpenAI copy, transcription, and speech when configured, with deterministic fallback otherwise.
+
 ## 9. Non-Functional Requirements
 
 - Demo path must be reliable without external hardware.
@@ -300,6 +325,8 @@ Example output:
 - Outcome verification must rely on stored before and after state, not only generated text.
 - External communication must respect configured channel preferences and demo-safe consent.
 - Messaging failures must not block the core dashboard workflow.
+- The backend must never return provider credentials or API keys to the frontend.
+- Simulation state should be recoverable after a WebSocket reconnect through recent persisted events.
 
 ## 10. Success Metrics
 
@@ -312,6 +339,8 @@ Example output:
 - Outcome verification shows whether irrigation improved moisture.
 - A high-risk or low-confidence action enters approval state instead of auto-executing.
 - A critical event produces a visible communication event on at least one channel.
+- The farm admin alert feed shows a recent history of actions, approvals, communications, and outcomes.
+- The OpenAI configuration flow can show ready, missing-key, validation-success, and validation-failure states without exposing the key.
 - The full demo completes in under 5 minutes.
 - The product clearly shows why agents matter.
 
@@ -327,6 +356,8 @@ Example output:
 - As a supervisor, I want to know whether an action actually improved the farm state.
 - As a consultant, I want recommendations to explain the evidence behind them.
 - As a judge, I want to see agent traces and evaluations so I can trust the system is not a black box.
+- As a demo operator, I want to configure an OpenAI key safely without editing frontend code.
+- As an admin, I want a rolling alert feed so I can review recent farm operations quickly.
 
 ## 12. Acceptance Criteria
 
@@ -337,11 +368,14 @@ Example output:
 - The "Call My Farm" flow works with microphone or text fallback.
 - The evaluation dashboard shows per-agent metrics.
 - Autonomous actions are visible and tied to workflow traces.
+- The farm admin drawer shows notifications, approvals, actions, outcomes, and performance signals.
 - Weather-aware planning is visible in at least one recommendation.
 - Outcome verification records a before and after result.
 - Autonomy mode and approval state are visible in the UI.
 - Each major recommendation includes a short explanation.
 - Communication Agent logs one in-app, WhatsApp, Telegram, mobile message, or call event.
+- `/simulation/status`, `/simulation/events`, and `/simulation/reset` support demo recovery.
+- `/ai/config/status`, `/ai/config/validate`, and `/ai/config/openai-key` support backend-only OpenAI configuration.
 
 ## 13. Future Roadmap
 

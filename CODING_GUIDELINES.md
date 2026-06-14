@@ -87,8 +87,8 @@ backend/
     models/
     services/
     communications/
+    simulation/
     simulator/
-    storage/
     websocket/
     policy/
 ```
@@ -211,10 +211,13 @@ Approval state values:
 
 ## 10. Real-Time Guidelines
 
-Use WebSockets for live farm and workflow updates.
+Use WebSockets for live farm and workflow updates. The implemented stream emits
+`simulation.tick` events from `/ws/farm`; more granular workflow events can be
+added as the durable event store grows.
 
 Event names:
 
+- `simulation.tick`
 - `telemetry.updated`
 - `agent.run.started`
 - `agent.step.started`

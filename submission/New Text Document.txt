@@ -1,0 +1,12 @@
+AgriOS is an AI-native operating system for mango farms, built for farmers, farm supervisors, and agriculture consultants. It combines a live farm digital twin, sensor telemetry, crop image analysis, weather-aware planning, voice interaction, and a coordinated team of specialized agents.
+When AgriOS detects low moisture or crop disease risk, it routes the event through agents for sensing, risk scoring, planning, robot inspection, farmer communication, outcome verification, memory, and evaluation. It can recommend or schedule irrigation, request approval for high-risk actions, alert the farmer through the right channel (Call, whatsapp, Telegram, text message), and later verify whether the action actually improved the farm.
+
+Pitch Most farm tools stop at dashboards. AgriOS turns farm data into traceable action.
+Farms need fast decisions across water stress, crop disease, weather, labor, and inspections, but that context is usually scattered. AgriOS brings it into one agentic command center where every decision has evidence, confidence, latency, cost, safety checks, and a visible outcome.
+What is novel is the closed loop: AgriOS does not just analyze or recommend. It observes, plans, acts, communicates, verifies, remembers, and evaluates itself. It is multimodal, using sensors, leaf images, text, and voice, and it supports farmer-friendly communication including Marathi, Gujarati, Hindi and English voice/text flows.
+
+https://github.com/umang6287/AgroOS.git
+
+https://frontend-pearl-eight-63.vercel.app
+
+agrios.youtube.com/1233
