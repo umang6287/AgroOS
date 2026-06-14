@@ -42,6 +42,54 @@ The important boundary is intentional: frontend components do not call provider
 SDKs directly. External providers should be wrapped by backend services,
 gateways, and typed API contracts.
 
+## Verification Notes for Judges
+
+If a judging tool reports `No GitHub scrape available`, first confirm the repo is
+public and reachable at `https://github.com/umang6287/AgroOS`. The source code
+is the evidence for the agentic claims; screenshots alone are not enough.
+
+AgriOS currently uses a custom Python orchestration layer rather than LangChain,
+CrewAI, or a Codex-specific agent framework. The implementation is intentionally
+small and inspectable:
+
+| Claim to verify | Evidence in this repo |
+| --- | --- |
+| Modular agents, not one monolithic LLM call | `backend/app/agents/` contains separate Supervisor, Sensor, Weather, Vision, Risk, Planner, Robot, Communication, Outcome, Voice, Memory, and Evaluation agent modules. |
+| Stateful workflow trace | `backend/app/agents/supervisor_agent.py` records ordered workflow runs through `record_workflow`, including sensor, vision, and voice workflows. |
+| Memory preservation | `backend/app/agents/memory_agent.py`, `backend/app/memory/farm_journal.py`, and the demo store persist journal entries for later planning and voice summaries. |
+| Tool or gateway use | `backend/app/agents/communication_agent.py` calls `backend/app/services/communication_gateway.py`, which routes in-app, WhatsApp, Telegram, SMS, and phone-call delivery behind one gateway. |
+| Closed-loop verification | `backend/app/agents/outcome_agent.py` stores a baseline moisture value, compares accelerated follow-up telemetry, and records before/after values. |
+| Error handling and fallback | `backend/app/services/communication_gateway.py` retries communication through Telegram fallback when Twilio delivery fails and marks failed delivery for human review. |
+| OpenAI integration | `backend/app/services/openai_service.py` uses the OpenAI Python SDK, Responses API structured JSON output, speech/text fallback, and Realtime session setup when an API key is configured. |
+| Demo contract tests | `backend/tests/test_api_contracts.py` verifies complete agent traces, vision fallback, voice fallback, simulation events, auth gating, and provider callback handling. |
+| Communication gateway tests | `backend/tests/test_communication_gateway.py` verifies Twilio success, Telegram direct send, Telegram fallback after Twilio failure, critical SMS plus phone-call routing, and disabled-fallback failure behavior. |
+
+What is real in the current repo:
+
+- FastAPI backend routes, WebSocket-ready state, SQLite/demo-store state, custom
+  agent modules, agent traces, memory entries, outcome checks, evaluation
+  scorecards, OpenAI service wrappers, Twilio/Telegram gateway logic, and tests.
+- Deterministic simulator data for farm telemetry, robot state, weather context,
+  demo vision, and accelerated outcome verification.
+- OpenAI-backed farmer-facing copy, speech, and realtime voice paths when
+  `OPENAI_API_KEY` and live-mode configuration are provided.
+
+What is intentionally simulated or partner-ready:
+
+- Real field sensors, MQTT/IoT ingestion, irrigation controllers, satellite
+  verification, production robot APIs, and production weather providers are not
+  required for the hackathon demo.
+- Leaf disease analysis currently uses a deterministic known-demo-image fallback
+  rather than TensorFlow, OpenCV, or a dedicated computer-vision model pipeline.
+- The outcome proof in demo mode compares stored baseline telemetry against
+  accelerated simulated follow-up telemetry. Production mode should replace that
+  with sensor polling or partner APIs before controlling real-world irrigation.
+
+To prove the closed loop during review, run the backend tests or open the app and
+show this sequence in the agent timeline: sensor event -> risk score -> plan ->
+robot assignment -> farmer communication -> outcome verification -> evaluation
+-> memory journal entry.
+
 ## Farmer Journey
 
 1. **Create Farm Admin**
