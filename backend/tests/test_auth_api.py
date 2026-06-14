@@ -148,6 +148,38 @@ def test_auth_required_for_profile_and_sensitive_ai_key_write(monkeypatch, tmp_p
     assert ai_key_response.status_code == 401
 
 
+def test_auth_accepts_bearer_session_fallback_without_cookie(monkeypatch, tmp_path):
+    client = _auth_client(monkeypatch, tmp_path)
+
+    setup = client.post("/auth/setup", json=ADMIN_PAYLOAD)
+    assert setup.status_code == 200
+    session_token = setup.json()["sessionToken"]
+
+    cookie_free_client = _auth_client(monkeypatch, tmp_path)
+    profile_response = cookie_free_client.patch(
+        "/auth/profile",
+        headers={"Authorization": f"Bearer {session_token}"},
+        json={"firstName": "Bearer", "lastName": "Admin"},
+    )
+
+    assert profile_response.status_code == 200
+    assert profile_response.json()["user"]["firstName"] == "Bearer"
+
+
+def test_signed_session_survives_missing_sqlite_session_store(monkeypatch, tmp_path):
+    client = _auth_client(monkeypatch, tmp_path)
+
+    setup = client.post("/auth/setup", json=ADMIN_PAYLOAD)
+    assert setup.status_code == 200
+    session_token = setup.json()["sessionToken"]
+    monkeypatch.setenv("AGRIOS_SIMULATION_DB_PATH", str(tmp_path / "other-instance.db"))
+
+    stateless_response = client.get("/auth/me", headers={"Authorization": f"Bearer {session_token}"})
+
+    assert stateless_response.status_code == 200
+    assert stateless_response.json()["user"]["userId"] == ADMIN_PAYLOAD["userId"]
+
+
 def test_session_cookie_policy_uses_secure_cross_site_for_https_frontend(monkeypatch):
     monkeypatch.setenv("FRONTEND_URL", "https://agrios-demo.vercel.app")
 

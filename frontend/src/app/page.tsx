@@ -5,7 +5,7 @@ import type { FormEvent, ReactNode } from "react";
 
 import { FarmCommandCenter } from "@/components/command-center/FarmCommandCenter";
 import { AgriOSMark } from "@/components/shared/AgriOSMark";
-import { API_URL, apiFetchJson } from "@/lib/api";
+import { API_URL, apiFetchJson, setSessionToken } from "@/lib/api";
 import type { AdminUser, AuthStatus } from "@/types/auth";
 
 type HealthState =
@@ -157,11 +157,12 @@ function AuthForm({
       const payload = isSetup
         ? { userId, password, firstName, lastName, whatsappNumber, mobileNumber, telegramAccount, apiKey }
         : { userId, password };
-      const result = await apiFetchJson<{ user: AdminUser }>(`${apiBaseUrl}${endpoint}`, {
+      const result = await apiFetchJson<{ user: AdminUser; sessionToken?: string }>(`${apiBaseUrl}${endpoint}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload)
       });
+      setSessionToken(result.sessionToken);
       setApiKey("");
       setPassword("");
       onAuthenticated(result.user);

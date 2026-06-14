@@ -2,7 +2,7 @@ import os
 from typing import Any
 from urllib.parse import urlparse
 
-from fastapi import APIRouter, Cookie, Depends, HTTPException, Response
+from fastapi import APIRouter, Cookie, Depends, Header, HTTPException, Response
 from pydantic import BaseModel, Field
 
 from app.api.auth_dependencies import require_admin
@@ -51,13 +51,19 @@ class AdminProfileUpdateRequest(BaseModel):
 
 
 @router.get("/status")
-def get_auth_status(agrios_session: str | None = Cookie(default=None, alias=SESSION_COOKIE_NAME)):
-    return auth_status(agrios_session)
+def get_auth_status(
+    agrios_session: str | None = Cookie(default=None, alias=SESSION_COOKIE_NAME),
+    authorization: str | None = Header(default=None),
+):
+    return auth_status(agrios_session or _bearer_token(authorization))
 
 
 @router.get("/me")
-def get_me(agrios_session: str | None = Cookie(default=None, alias=SESSION_COOKIE_NAME)):
-    profile = get_profile_for_session(agrios_session)
+def get_me(
+    agrios_session: str | None = Cookie(default=None, alias=SESSION_COOKIE_NAME),
+    authorization: str | None = Header(default=None),
+):
+    profile = get_profile_for_session(agrios_session or _bearer_token(authorization))
     if not profile:
         raise HTTPException(status_code=401, detail="Farm admin login required.")
     return {"user": profile}
@@ -75,7 +81,14 @@ def setup_admin(request: AdminSetupRequest, response: Response):
     api_key_result = _persist_validated_api_key(request.apiKey, api_key_validation)
     _apply_api_key_status(profile, api_key_result)
     _set_session_cookie(response, token)
-    return {"setupComplete": True, "authenticated": True, "user": profile, "sessionExpiresAt": expires_at, "openAiKey": api_key_result}
+    return {
+        "setupComplete": True,
+        "authenticated": True,
+        "user": profile,
+        "sessionExpiresAt": expires_at,
+        "sessionToken": token,
+        "openAiKey": api_key_result,
+    }
 
 
 @router.post("/login")
@@ -86,7 +99,7 @@ def login_admin(request: AdminLoginRequest, response: Response):
 
     token, expires_at = create_session(profile["userId"])
     _set_session_cookie(response, token)
-    return {"authenticated": True, "user": profile, "sessionExpiresAt": expires_at}
+    return {"authenticated": True, "user": profile, "sessionExpiresAt": expires_at, "sessionToken": token}
 
 
 @router.post("/logout")
@@ -156,3 +169,12 @@ def _session_cookie_policy() -> tuple[str, bool]:
     if parsed.scheme == "https":
         return "none", True
     return "lax", False
+
+
+def _bearer_token(authorization: str | None) -> str | None:
+    if not authorization:
+        return None
+    scheme, _, token = authorization.partition(" ")
+    if scheme.lower() != "bearer" or not token.strip():
+        return None
+    return token.strip()

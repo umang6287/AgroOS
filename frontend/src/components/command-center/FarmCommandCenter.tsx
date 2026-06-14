@@ -9,6 +9,7 @@ import { mockEvaluation } from "@/data/mockEvaluation";
 import { mockFarmState } from "@/data/mockFarmState";
 import { FarmerConversationPanel, type ConversationMessage, type ConversationQuickAction, type FarmerContextCard } from "@/components/voice/FarmerConversationPanel";
 import { AgriOSMark } from "@/components/shared/AgriOSMark";
+import { authHeaders, setSessionToken } from "@/lib/api";
 import { translations, type AppCopy, type LanguageCode, type Tone } from "@/lib/i18n";
 import { WS_URL } from "@/lib/websocket";
 import type { AgentEnvelope, AgentTrace } from "@/types/agents";
@@ -276,7 +277,7 @@ function formatAgentName(agent: string, copy: AppCopy) {
 }
 
 async function fetchJson<T>(url: string, init?: RequestInit): Promise<T> {
-  const response = await fetch(url, { credentials: "include", ...init });
+  const response = await fetch(url, { credentials: "include", ...init, headers: authHeaders(init?.headers) });
 
   if (!response.ok) {
     let detail = `${url} returned ${response.status}`;
@@ -1334,6 +1335,7 @@ export function FarmCommandCenter({
     } catch {
       // The UI should still leave the authenticated state if the cookie is stale or already gone.
     } finally {
+      setSessionToken(null);
       setIsLoggingOut(false);
       onLogout();
     }

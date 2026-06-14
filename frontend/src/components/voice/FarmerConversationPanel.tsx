@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 
 import { AgriOSMark } from "@/components/shared/AgriOSMark";
+import { authHeaders } from "@/lib/api";
 import type { AppCopy, Tone } from "@/lib/i18n";
 import type { AgentEnvelope } from "@/types/agents";
 
@@ -202,7 +203,7 @@ export function FarmerConversationPanel({
       const response = await fetch(`${apiBaseUrl}/voice/realtime/session?language=${encodeURIComponent(language)}&callSign=${encodeURIComponent(callSign)}`, {
         method: "POST",
         credentials: "include",
-        headers: { "Content-Type": "application/sdp" },
+        headers: authHeaders({ "Content-Type": "application/sdp" }),
         body: offer.sdp ?? "",
       });
 

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import base64
+import json
 import hashlib
 import hmac
 import os
@@ -183,10 +184,11 @@ def update_admin_profile(user_id: str, data: dict[str, Any]) -> dict[str, Any]:
 
 def create_session(user_id: str) -> tuple[str, str]:
     init_auth_database()
-    token = secrets.token_urlsafe(32)
-    token_hash = _token_hash(token)
     created_at = _now()
     expires_at = created_at + timedelta(days=SESSION_DAYS)
+    profile = get_admin_profile(user_id) or {"userId": user_id}
+    token = _signed_session_token(profile, expires_at)
+    token_hash = _token_hash(token)
     with _connect() as connection:
         connection.execute(
             """
@@ -201,6 +203,10 @@ def create_session(user_id: str) -> tuple[str, str]:
 def get_profile_for_session(token: str | None) -> dict[str, Any] | None:
     if not token:
         return None
+
+    stateless_profile = _profile_from_signed_session_token(token)
+    if stateless_profile:
+        return stateless_profile
 
     init_auth_database()
     token_hash = _token_hash(token)
@@ -234,7 +240,7 @@ def delete_session(token: str | None) -> None:
 def auth_status(token: str | None) -> dict[str, Any]:
     profile = get_profile_for_session(token)
     return {
-        "setupComplete": has_admin_profile(),
+        "setupComplete": bool(profile) or has_admin_profile(),
         "authenticated": profile is not None,
         "user": profile,
     }
@@ -313,6 +319,71 @@ def _verify_password(password: str, encoded: str) -> bool:
 
 def _token_hash(token: str) -> str:
     return hashlib.sha256(token.encode("utf-8")).hexdigest()
+
+
+def _signed_session_token(profile: dict[str, Any], expires_at: datetime) -> str:
+    payload = {
+        "v": 1,
+        "exp": int(expires_at.timestamp()),
+        "profile": {
+            "userId": profile.get("userId"),
+            "firstName": profile.get("firstName", "Farm"),
+            "lastName": profile.get("lastName", "Admin"),
+            "whatsappNumber": profile.get("whatsappNumber"),
+            "mobileNumber": profile.get("mobileNumber"),
+            "telegramAccount": profile.get("telegramAccount"),
+            "initials": profile.get("initials") or _initials(str(profile.get("firstName", "Farm")), str(profile.get("lastName", "Admin"))),
+            "hasOpenAiKey": bool(get_ai_config_status()["configured"]),
+        },
+    }
+    payload_b64 = _urlsafe_b64encode(json.dumps(payload, separators=(",", ":")).encode("utf-8"))
+    signature = _sign_session_payload(payload_b64)
+    return f"agrios1.{payload_b64}.{signature}"
+
+
+def _profile_from_signed_session_token(token: str) -> dict[str, Any] | None:
+    parts = token.split(".", 2)
+    if len(parts) != 3 or parts[0] != "agrios1":
+        return None
+    _, payload_b64, signature = parts
+    expected_signature = _sign_session_payload(payload_b64)
+    if not hmac.compare_digest(signature, expected_signature):
+        return None
+    try:
+        payload = json.loads(_urlsafe_b64decode(payload_b64).decode("utf-8"))
+    except (ValueError, json.JSONDecodeError):
+        return None
+    if int(payload.get("exp") or 0) <= int(_now().timestamp()):
+        return None
+    profile = payload.get("profile")
+    if not isinstance(profile, dict) or not profile.get("userId"):
+        return None
+    profile["hasOpenAiKey"] = bool(get_ai_config_status()["configured"])
+    return profile
+
+
+def _sign_session_payload(payload_b64: str) -> str:
+    secret = _session_secret()
+    digest = hmac.new(secret.encode("utf-8"), payload_b64.encode("ascii"), hashlib.sha256).digest()
+    return _urlsafe_b64encode(digest)
+
+
+def _session_secret() -> str:
+    return (
+        os.getenv("AGRIOS_SESSION_SECRET")
+        or os.getenv("OPENAI_API_KEY")
+        or os.getenv("JWT_SECRET")
+        or "agrios-demo-session-secret"
+    )
+
+
+def _urlsafe_b64encode(value: bytes) -> str:
+    return base64.urlsafe_b64encode(value).decode("ascii").rstrip("=")
+
+
+def _urlsafe_b64decode(value: str) -> bytes:
+    padding = "=" * (-len(value) % 4)
+    return base64.urlsafe_b64decode((value + padding).encode("ascii"))
 
 
 def _connect() -> sqlite3.Connection:
