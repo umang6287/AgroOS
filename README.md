@@ -90,6 +90,10 @@ gateways, and typed API contracts.
      preference and severity.
    - Info can stay in-app, warnings can go through WhatsApp or Telegram, and
      critical alerts can escalate to SMS plus phone call.
+   - Submitted notification demos show farmer alerts delivered through
+     [text message](https://youtube.com/shorts/IRHE_JXpdD4?feature=share),
+     [Telegram](https://youtube.com/shorts/h0wqyPOTffw?feature=share), and
+     [incoming phone call](https://youtube.com/shorts/hjs0WAa4S5s?feature=share).
 
 9. **Verify and remember**
    - The Outcome Agent compares baseline telemetry against follow-up telemetry.
@@ -105,9 +109,12 @@ local Indian languages while preserving the approval gate for risky actions.
 
 | Result | What it proves | Video |
 | --- | --- | --- |
-| English farm-status and approval conversation | AgriOS can brief the farmer on current farm status, active risk, planned action, and approval need in English. | [Watch English demo](submission/Videos/English.mp4) |
-| Gujarati farm-status and approval conversation | AgriOS can respond in Gujarati while keeping the same operational context: status, risk, action, and approval. | [Watch Gujarati demo](submission/Videos/Gujarati.mp4) |
-| Marathi farm-status and approval conversation | AgriOS can support a Marathi farmer conversation, including status briefing and approval-oriented decision flow. | [Watch Marathi demo](submission/Videos/Marathi.mp4) |
+| English farm-status and approval conversation | AgriOS can brief the farmer on current farm status, active risk, planned action, and approval need in English. | [Watch English demo](https://youtu.be/Km30uo-Pmy8) |
+| Gujarati farm-status and approval conversation | AgriOS can respond in Gujarati while keeping the same operational context: status, risk, action, and approval. | [Watch Gujarati demo](https://youtu.be/cYI92D1hHE0) |
+| Marathi farm-status and approval conversation | AgriOS can support a Marathi farmer conversation, including status briefing and approval-oriented decision flow. | [Watch Marathi demo](https://youtu.be/FJ33NGefzgE) |
+| Text-message farmer notification | AgriOS can notify the farmer through a text message when the Communication Agent escalates an alert. | [Watch text-message notification](https://youtube.com/shorts/IRHE_JXpdD4?feature=share) |
+| Telegram farmer notification | AgriOS can route farmer alerts through Telegram as a configured communication channel. | [Watch Telegram notification](https://youtube.com/shorts/h0wqyPOTffw?feature=share) |
+| Incoming-call farmer notification | AgriOS can escalate urgent farm events through an incoming phone call for critical attention. | [Watch incoming-call notification](https://youtube.com/shorts/hjs0WAa4S5s?feature=share) |
 
 ## Screenshots
 
@@ -161,9 +168,9 @@ scorecard can include:
   farmer's question.
 
 Multilingual conversation evidence is available in the submitted result videos:
-[English](submission/Videos/English.mp4),
-[Gujarati](submission/Videos/Gujarati.mp4), and
-[Marathi](submission/Videos/Marathi.mp4).
+[English](https://youtu.be/Km30uo-Pmy8),
+[Gujarati](https://youtu.be/cYI92D1hHE0), and
+[Marathi](https://youtu.be/FJ33NGefzgE).
 
 ![Agent performance and evaluation](docs/screenshots/09-agent-evaluation.png)
 
@@ -334,6 +341,11 @@ AgriOS routes communication by severity:
 
 The UI will still show simulated delivery status when providers are not
 configured, so the demo remains usable without external accounts.
+
+Submitted communication proofs show the farmer notification path working through
+[text message](https://youtube.com/shorts/IRHE_JXpdD4?feature=share),
+[Telegram](https://youtube.com/shorts/h0wqyPOTffw?feature=share), and
+[incoming phone call](https://youtube.com/shorts/hjs0WAa4S5s?feature=share).
 
 ### Safety and compliance
 
